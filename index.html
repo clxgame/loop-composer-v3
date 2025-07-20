@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Loop Composer v3</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      color: #000;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .controls button {
+      margin: 0 0.5rem;
+      padding: 0.5rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 120px repeat(8, 1fr);
+      gap: 2px;
+      margin-top: 1rem;
+    }
+    .row {
+      display: contents;
+    }
+    .cell {
+      border: 1px solid #ccc;
+      height: 50px;
+      text-align: center;
+      vertical-align: middle;
+      position: relative;
+    }
+    .track-name {
+      background: #eee;
+      font-weight: bold;
+      text-align: left;
+      padding-left: 0.5rem;
+      cursor: pointer;
+    }
+    .loop-block {
+      background: #000;
+      color: #fff;
+      height: 100%;
+      width: 100%;
+      cursor: move;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .rename-input {
+      width: 100%;
+      font-size: 1rem;
+      border: none;
+      padding: 0.5rem;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎼 Loop Composer v3 (Prototype)</h1>
+
+  <div class="controls">
+    <button>⏪</button>
+    <button>▶️</button>
+    <button>⏸</button>
+    <button>⏹</button>
+    <button>⏩</button>
+    <button>⭳ EXPORT</button>
+  </div>
+
+  <div class="grid" id="loopGrid">
+    <!-- Time labels -->
+    <div></div>
+    <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div>
+    <div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div>
+  </div>
+
+  <script>
+    const grid = document.getElementById("loopGrid");
+    const trackNames = ["Drums", "Percussion", "Bass", "Synth 1", "Synth 2", "Synth 3"];
+
+    trackNames.forEach((name, rowIdx) => {
+      const nameCell = document.createElement("div");
+      nameCell.className = "cell track-name";
+      nameCell.textContent = name;
+      nameCell.addEventListener("click", () => enableRename(nameCell));
+      grid.appendChild(nameCell);
+
+      for (let col = 0; col < 8; col++) {
+        const loopCell = document.createElement("div");
+        loopCell.className = "cell";
+        loopCell.dataset.row = rowIdx;
+        loopCell.dataset.col = col;
+        loopCell.addEventListener("dragover", e => e.preventDefault());
+        loopCell.addEventListener("drop", e => dropLoop(e, loopCell));
+        grid.appendChild(loopCell);
+      }
+    });
+
+    // Create one draggable loop block to simulate drag-drop
+    const sampleLoop = document.createElement("div");
+    sampleLoop.className = "loop-block";
+    sampleLoop.draggable = true;
+    sampleLoop.textContent = "Loop 1";
+    sampleLoop.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("text/plain", "Loop 1");
+    });
+    document.body.appendChild(sampleLoop);
+    sampleLoop.style.position = "absolute";
+    sampleLoop.style.top = "100px";
+    sampleLoop.style.left = "50%";
+
+    function dropLoop(e, cell) {
+      const loop = document.createElement("div");
+      loop.className = "loop-block";
+      loop.textContent = "Loop 1";
+      cell.innerHTML = "";
+      cell.appendChild(loop);
+    }
+
+    function enableRename(cell) {
+      const currentName = cell.textContent;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = currentName;
+      input.className = "rename-input";
+      input.addEventListener("blur", () => {
+        cell.textContent = input.value || currentName;
+        cell.addEventListener("click", () => enableRename(cell));
+      });
+      cell.removeEventListener("click", () => enableRename(cell));
+      cell.innerHTML = "";
+      cell.appendChild(input);
+      input.focus();
+    }
+  </script>
+</body>
+</html>
