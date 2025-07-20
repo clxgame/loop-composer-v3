@@ -105,18 +105,7 @@
       }
     });
 
-    // Create one draggable loop block to simulate drag-drop
-    const sampleLoop = document.createElement("div");
-    sampleLoop.className = "loop-block";
-    sampleLoop.draggable = true;
-    sampleLoop.textContent = "Loop 1";
-    sampleLoop.addEventListener("dragstart", e => {
-      e.dataTransfer.setData("text/plain", "Loop 1");
-    });
-    document.body.appendChild(sampleLoop);
-    sampleLoop.style.position = "absolute";
-    sampleLoop.style.top = "100px";
-    sampleLoop.style.left = "50%";
+    
 
     function dropLoop(e, cell) {
       const loop = document.createElement("div");
